@@ -17,7 +17,8 @@ export function useWatchlist(): UseWatchlistReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const supabase = createClient();
+  // Create client lazily so it only runs on the client (not during SSR prerender)
+  const [supabase] = useState(() => createClient());
 
   const refetch = useCallback(async () => {
     setLoading(true);
