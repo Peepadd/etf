@@ -56,6 +56,8 @@ export interface PortfolioEntry {
 export interface DailyPortfolioValue {
   date: string;
   value: number;
+  /** Cumulative total investment (sum of all BUY amounts) */
+  investment?: number;
 }
 
 export type SortDirection = "asc" | "desc";
@@ -99,6 +101,17 @@ export interface StockHistory {
   symbol: string;
   data: HistoryPoint[];
   meta: StockHistoryMeta;
+}
+
+export interface StockFundamentals {
+  symbol: string;
+  marketCap: number | null;
+  trailingPE: number | null;
+  forwardPE: number | null;
+  sector: string | null;
+  industry: string | null;
+  dividendYield: number | null;
+  longName: string | null;
 }
 
 export type TimeRange = "5d" | "1mo" | "3mo" | "6mo" | "1y" | "5y";

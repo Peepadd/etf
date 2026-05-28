@@ -13,6 +13,7 @@ import {
   X,
   ChevronLeft,
   BarChart3,
+  LineChart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import { createClient } from "@/lib/supabase";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/stocks", label: "Stocks", icon: LineChart },
   { href: "/trades", label: "Trades", icon: TrendingUp },
   { href: "/dividends", label: "Dividends", icon: DollarSign },
   { href: "/watchlist", label: "Watchlist", icon: Star },
