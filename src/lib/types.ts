@@ -64,3 +64,11 @@ export interface SortConfig {
   key: string;
   direction: SortDirection;
 }
+
+export interface StockPrice {
+  symbol: string;
+  price: number | null;
+  change: number | null;
+  changePercent: number | null;
+  currency: string;
+}

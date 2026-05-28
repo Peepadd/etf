@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Trash2, Star, Target } from "lucide-react";
+import { Trash2, Star, Target, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { toast } from "sonner";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, cn } from "@/lib/utils";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import { useStockPrices } from "@/hooks/useStockPrices";
 import type { WatchlistItem } from "@/lib/types";
 import { WatchlistForm } from "@/components/forms/WatchlistForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,12 +41,44 @@ function getPriorityVariant(priority: string) {
   }
 }
 
+function PriceDisplay({ price, change, changePercent }: { price: number; change: number | null; changePercent: number | null }) {
+  const isUp = change != null && change > 0;
+  const isDown = change != null && change < 0;
+  const colorClass = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-muted-foreground";
+  const Icon = isUp ? TrendingUp : isDown ? TrendingDown : Minus;
+  const changeStr = change != null ? `${isUp ? "+" : ""}${change.toFixed(2)}` : "—";
+  const changePercentStr = changePercent != null ? `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : "—";
+
+  return (
+    <div className="flex items-baseline gap-2">
+      <span className={`text-xl font-bold ${colorClass}`}>{formatCurrency(price)}</span>
+      <span className={`flex items-center gap-0.5 text-xs font-medium ${colorClass}`}>
+        {change != null && <Icon className="h-3 w-3" />}
+        {changeStr} ({changePercentStr})
+      </span>
+    </div>
+  );
+}
+
+function PriceSkeleton() {
+  return (
+    <div className="flex items-baseline gap-2">
+      <Skeleton className="h-7 w-24" />
+      <Skeleton className="h-4 w-20" />
+    </div>
+  );
+}
+
 export default function WatchlistPage() {
   const { items, loading, refetch, deleteItem } = useWatchlist();
   const [priorityFilter, setPriorityFilter] = useState<string>("ALL");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<WatchlistItem | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Get unique symbols for price fetching
+  const symbols = useMemo(() => [...new Set(items.map((i) => i.symbol))], [items]);
+  const { prices, loading: pricesLoading } = useStockPrices(symbols);
 
   const filteredItems = useMemo(() => {
     if (priorityFilter === "ALL") return items;
@@ -72,7 +105,7 @@ export default function WatchlistPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Watchlist</h1>
-          <p className="text-sm text-muted-foreground">Stocks you are watching.</p>
+          <p className="text-sm text-muted-foreground">Stocks you are watching with live prices.</p>
         </div>
         <WatchlistForm onSuccess={refetch} />
       </div>
@@ -102,6 +135,7 @@ export default function WatchlistPage() {
                 <Skeleton className="h-4 w-20" />
               </CardHeader>
               <CardContent className="space-y-2">
+                <PriceSkeleton />
                 <Skeleton className="h-4 w-28" />
                 <Skeleton className="h-4 w-32" />
               </CardContent>
@@ -120,44 +154,81 @@ export default function WatchlistPage() {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredItems.map((item) => (
-            <Card key={item.id} className="group relative">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-lg font-bold">{item.symbol}</CardTitle>
-                    <Badge variant={getPriorityVariant(item.priority)} className="mt-1">
-                      {item.priority}
-                    </Badge>
+          {filteredItems.map((item) => {
+            const stockPrice = prices.get(item.symbol);
+            const currentPrice = stockPrice?.price ?? null;
+
+            return (
+              <Card key={item.id} className="group relative">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-lg font-bold">{item.symbol}</CardTitle>
+                      <Badge variant={getPriorityVariant(item.priority)} className="mt-1">
+                        {item.priority}
+                      </Badge>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => {
+                        setDeleteTarget(item);
+                        setDeleteDialogOpen(true);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4 text-muted-foreground hover:text-red-500" />
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => {
-                      setDeleteTarget(item);
-                      setDeleteDialogOpen(true);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-red-500" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                {item.target_price && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Target className="h-3.5 w-3.5" />
-                    <span>Target: <span className="text-foreground font-medium">{formatCurrency(item.target_price)}</span></span>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  {/* Live Price */}
+                  {currentPrice != null && currentPrice > 0 ? (
+                    <PriceDisplay
+                      price={currentPrice}
+                      change={stockPrice!.change}
+                      changePercent={stockPrice!.changePercent}
+                    />
+                  ) : pricesLoading ? (
+                    <PriceSkeleton />
+                  ) : (
+                    <p className="text-xs text-muted-foreground">Price unavailable</p>
+                  )}
+
+                  {/* Target Price */}
+                  {item.target_price && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Target className="h-3.5 w-3.5" />
+                      <span>
+                        Target:{" "}
+                        <span className="text-foreground font-medium">
+                          {formatCurrency(item.target_price)}
+                        </span>
+                      </span>
+                      {currentPrice != null && currentPrice > 0 && (
+                        <span
+                          className={cn(
+                            "text-xs font-medium",
+                            currentPrice >= item.target_price
+                              ? "text-green-500"
+                              : "text-amber-500",
+                          )}
+                        >
+                          ({currentPrice >= item.target_price ? "Hit" : "Below target"})
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {item.reason && (
+                    <p className="text-muted-foreground line-clamp-2">{item.reason}</p>
+                  )}
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                    <span>Added {formatDate(item.created_at)}</span>
                   </div>
-                )}
-                {item.reason && (
-                  <p className="text-muted-foreground line-clamp-2">{item.reason}</p>
-                )}                  <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-                  <span>Added {formatDate(item.created_at)}</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
 
