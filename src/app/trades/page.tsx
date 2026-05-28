@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Trash2, TrendingUp } from "lucide-react";
+import { Trash2, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency, formatDate, formatNumber } from "@/lib/utils";
 import { useTrades } from "@/hooks/useTrades";
+import { useStockPrices } from "@/hooks/useStockPrices";
 import type { Trade, SortConfig } from "@/lib/types";
 import { TradeForm } from "@/components/forms/TradeForm";
 import { DataTable, type Column } from "@/components/DataTable";
@@ -39,6 +40,10 @@ export default function TradesPage() {
   const [deleteTarget, setDeleteTarget] = useState<Trade | null>(null);
   const [deleting, setDeleting] = useState(false);
   const pageSize = 20;
+
+  // Get unique symbols for market price fetching
+  const symbols = useMemo(() => [...new Set(trades.map((t) => t.symbol))], [trades]);
+  const { prices } = useStockPrices(symbols);
 
   const filteredTrades = useMemo(() => {
     return trades.filter((trade) => {
@@ -114,6 +119,33 @@ export default function TradesPage() {
       label: "Price",
       sortable: true,
       render: (t) => formatCurrency(t.price),
+      className: "text-right",
+    },
+    {
+      key: "mkt_price",
+      label: "Mkt",
+      render: (t) => {
+        const sp = prices.get(t.symbol);
+        const mktPrice = sp?.price;
+        if (mktPrice == null || mktPrice <= 0) {
+          return <span className="text-xs text-muted-foreground">—</span>;
+        }
+        const diff = t.type === "BUY" ? mktPrice - t.price : t.price - mktPrice;
+        const isProfit = diff > 0;
+        const isLoss = diff < 0;
+        const diffPct = t.price > 0 ? (diff / t.price) * 100 : 0;
+        const colorClass = isProfit ? "text-green-500" : isLoss ? "text-red-500" : "text-muted-foreground";
+        const Icon = isProfit ? TrendingUp : isLoss ? TrendingDown : Minus;
+        return (
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="text-xs font-medium tabular-nums">{formatCurrency(mktPrice)}</span>
+            <span className={`flex items-center gap-0.5 text-[11px] ${colorClass}`}>
+              <Icon className="h-3 w-3" />
+              {diffPct >= 0 ? "+" : ""}{diffPct.toFixed(1)}%
+            </span>
+          </div>
+        );
+      },
       className: "text-right",
     },
     {

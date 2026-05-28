@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { Trash2, Star, Target, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency, formatDate, cn } from "@/lib/utils";
@@ -159,74 +160,78 @@ export default function WatchlistPage() {
             const currentPrice = stockPrice?.price ?? null;
 
             return (
-              <Card key={item.id} className="group relative">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg font-bold">{item.symbol}</CardTitle>
-                      <Badge variant={getPriorityVariant(item.priority)} className="mt-1">
-                        {item.priority}
-                      </Badge>
+              <Link href={`/stock/${item.symbol}`} key={item.id} className="group block">
+                <Card className="relative cursor-pointer transition-all hover:border-primary/50 hover:shadow-md">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="text-lg font-bold">{item.symbol}</CardTitle>
+                        <Badge variant={getPriorityVariant(item.priority)} className="mt-1">
+                          {item.priority}
+                        </Badge>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setDeleteTarget(item);
+                          setDeleteDialogOpen(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-muted-foreground hover:text-red-500" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => {
-                        setDeleteTarget(item);
-                        setDeleteDialogOpen(true);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4 text-muted-foreground hover:text-red-500" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3 text-sm">
-                  {/* Live Price */}
-                  {currentPrice != null && currentPrice > 0 ? (
-                    <PriceDisplay
-                      price={currentPrice}
-                      change={stockPrice!.change}
-                      changePercent={stockPrice!.changePercent}
-                    />
-                  ) : pricesLoading ? (
-                    <PriceSkeleton />
-                  ) : (
-                    <p className="text-xs text-muted-foreground">Price unavailable</p>
-                  )}
+                  </CardHeader>
+                  <CardContent className="space-y-3 text-sm">
+                    {/* Live Price */}
+                    {currentPrice != null && currentPrice > 0 ? (
+                      <PriceDisplay
+                        price={currentPrice}
+                        change={stockPrice!.change}
+                        changePercent={stockPrice!.changePercent}
+                      />
+                    ) : pricesLoading ? (
+                      <PriceSkeleton />
+                    ) : (
+                      <p className="text-xs text-muted-foreground">Price unavailable</p>
+                    )}
 
-                  {/* Target Price */}
-                  {item.target_price && (
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Target className="h-3.5 w-3.5" />
-                      <span>
-                        Target:{" "}
-                        <span className="text-foreground font-medium">
-                          {formatCurrency(item.target_price)}
+                    {/* Target Price */}
+                    {item.target_price && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Target className="h-3.5 w-3.5" />
+                        <span>
+                          Target:{" "}
+                          <span className="text-foreground font-medium">
+                            {formatCurrency(item.target_price)}
+                          </span>
                         </span>
-                      </span>
-                      {currentPrice != null && currentPrice > 0 && (
-                        <span
-                          className={cn(
-                            "text-xs font-medium",
-                            currentPrice >= item.target_price
-                              ? "text-green-500"
-                              : "text-amber-500",
-                          )}
-                        >
-                          ({currentPrice >= item.target_price ? "Hit" : "Below target"})
-                        </span>
-                      )}
+                        {currentPrice != null && currentPrice > 0 && (
+                          <span
+                            className={cn(
+                              "text-xs font-medium",
+                              currentPrice >= item.target_price
+                                ? "text-green-500"
+                                : "text-amber-500",
+                            )}
+                          >
+                            ({currentPrice >= item.target_price ? "Hit" : "Below target"})
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {item.reason && (
+                      <p className="text-muted-foreground line-clamp-2">{item.reason}</p>
+                    )}
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                      <span>Added {formatDate(item.created_at)}</span>
                     </div>
-                  )}
-                  {item.reason && (
-                    <p className="text-muted-foreground line-clamp-2">{item.reason}</p>
-                  )}
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-                    <span>Added {formatDate(item.created_at)}</span>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Link>
             );
           })}
         </div>

@@ -72,3 +72,33 @@ export interface StockPrice {
   changePercent: number | null;
   currency: string;
 }
+
+export interface HistoryPoint {
+  date: string;
+  open: number | null;
+  high: number | null;
+  low: number | null;
+  close: number | null;
+  volume: number | null;
+}
+
+export interface StockHistoryMeta {
+  currency: string;
+  longName: string | null;
+  regularMarketPrice: number | null;
+  regularMarketOpen: number | null;
+  previousClose: number | null;
+  fiftyTwoWeekHigh: number | null;
+  fiftyTwoWeekLow: number | null;
+  regularMarketDayHigh: number | null;
+  regularMarketDayLow: number | null;
+  regularMarketVolume: number | null;
+}
+
+export interface StockHistory {
+  symbol: string;
+  data: HistoryPoint[];
+  meta: StockHistoryMeta;
+}
+
+export type TimeRange = "5d" | "1mo" | "3mo" | "6mo" | "1y" | "5y";

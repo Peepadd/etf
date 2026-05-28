@@ -7,6 +7,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 
+import { StockSymbolInput } from "@/components/StockSymbolInput";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -55,6 +56,8 @@ export function TradeForm({ onSuccess }: TradeFormProps) {
     handleSubmit,
     reset,
     setValue,
+    watch,
+    trigger,
     formState: { errors },
   } = useForm<TradeFormData>({
     resolver: zodResolver(tradeSchema),
@@ -68,6 +71,8 @@ export function TradeForm({ onSuccess }: TradeFormProps) {
       notes: "",
     },
   });
+
+  const watchSymbol = watch("symbol");
 
   const onSubmit = async (data: TradeFormData) => {
     setSubmitting(true);
@@ -123,12 +128,14 @@ export function TradeForm({ onSuccess }: TradeFormProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="symbol">Symbol</Label>
-              <Input
+              <StockSymbolInput
                 id="symbol"
                 placeholder="AAPL"
-                {...register("symbol")}
+                value={watchSymbol}
+                onChange={(v) => setValue("symbol", v)}
+                onBlur={() => trigger("symbol")}
+                error={errors.symbol?.message}
               />
-              {errors.symbol && <p className="text-xs text-red-500">{errors.symbol.message}</p>}
             </div>
           </div>
 
