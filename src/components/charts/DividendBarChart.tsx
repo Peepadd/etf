@@ -67,24 +67,30 @@ export function DividendBarChart({ data, loading }: DividendBarChartProps) {
         ) : (
           <ResponsiveContainer width="100%" height={300}>
             <RechartsBar data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <defs>
+                <linearGradient id="dividendBarGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#4ade80" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#22c55e" stopOpacity={0.85} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.15)" />
               <XAxis
                 dataKey="label"
                 tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                stroke="hsl(var(--border))"
+                stroke="hsl(var(--muted-foreground) / 0.2)"
                 interval="preserveStartEnd"
                 minTickGap={30}
               />
               <YAxis
                 tickFormatter={(val: number) => formatCompactCurrency(val)}
                 tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                stroke="hsl(var(--border))"
+                stroke="hsl(var(--muted-foreground) / 0.2)"
                 width={65}
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar
                 dataKey="amount"
-                fill="#22c55e"
+                fill="url(#dividendBarGradient)"
                 radius={[4, 4, 0, 0]}
                 maxBarSize={40}
               />

@@ -32,11 +32,11 @@ export function KpiCard({ title, value, icon: Icon, description, valueClassName,
   }
 
   return (
-    <Card>
+    <Card className="border-muted-foreground/10 bg-muted/[0.15]">
       <CardContent className="p-6">
         <div className="flex items-center gap-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-            <Icon className="h-5 w-5 text-muted-foreground" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-muted-foreground/15 bg-muted/40">
+            <Icon className="h-5 w-5 text-foreground/75" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</p>

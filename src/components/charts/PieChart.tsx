@@ -6,16 +6,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatCompactCurrency } from "@/lib/utils";
 import type { PortfolioEntry } from "@/lib/types";
 
+// Brighter, more saturated palette optimized for dark backgrounds
 const COLORS = [
-  "#22c55e",
-  "#3b82f6",
-  "#f59e0b",
-  "#ef4444",
-  "#8b5cf6",
-  "#6366f1",
-  "#14b8a6",
-  "#f97316",
-  "#71717a",
+  "#4ade80", // green
+  "#60a5fa", // blue
+  "#fbbf24", // amber
+  "#f87171", // red
+  "#a78bfa", // purple
+  "#818cf8", // indigo
+  "#2dd4bf", // teal
+  "#fb923c", // orange
+  "#a1a1aa", // zinc
 ];
 
 interface CustomTooltipProps {
@@ -69,6 +70,13 @@ export function PieChartCard({ data, loading }: PieChartCardProps) {
         ) : (
           <ResponsiveContainer width="100%" height={300}>
             <RechartsPie>
+              {/* Center label showing total value */}
+              <text x="50%" y="48%" textAnchor="middle" dominantBaseline="middle" fill="hsl(var(--foreground))" fontSize="18" fontWeight="bold" fontFamily="var(--font-sans)">
+                {formatCompactCurrency(data.reduce((s, e) => s + e.value, 0))}
+              </text>
+              <text x="50%" y="58%" textAnchor="middle" dominantBaseline="middle" fill="hsl(var(--muted-foreground))" fontSize="11">
+                Total Value
+              </text>
               <Pie
                 data={data}
                 dataKey="value"
@@ -77,14 +85,16 @@ export function PieChartCard({ data, loading }: PieChartCardProps) {
                 cy="50%"
                 outerRadius={100}
                 innerRadius={60}
-                strokeWidth={2}
+                strokeWidth={3}
                 stroke="hsl(var(--background))"
               >
                 {data.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
-                    className="outline-none hover:opacity-80 transition-opacity"
+                    stroke="rgba(0,0,0,0.4)"
+                    strokeWidth={1.5}
+                    className="outline-none hover:opacity-90 transition-opacity"
                   />
                 ))}
               </Pie>

@@ -1,7 +1,8 @@
 "use client";
 
 import {
-  LineChart as RechartsLine,
+  AreaChart,
+  Area,
   Line,
   XAxis,
   YAxis,
@@ -120,40 +121,47 @@ export function LineChartCard({ data, loading, showInvestment }: LineChartCardPr
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
-            <RechartsLine data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <AreaChart data={data}>
+              <defs>
+                <linearGradient id="valueGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#22c55e" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                </linearGradient>
+
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.15)" />
               <XAxis
                 dataKey="date"
                 tickFormatter={(val) => formatDateShort(val)}
                 tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-                stroke="hsl(var(--border))"
+                stroke="hsl(var(--muted-foreground) / 0.2)"
               />
               <YAxis
                 tickFormatter={(val) => formatCompactCurrency(val)}
                 tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-                stroke="hsl(var(--border))"
+                stroke="hsl(var(--muted-foreground) / 0.2)"
               />
               <Tooltip content={<CustomTooltip />} />
-              <Line
+              <Area
                 type="monotone"
                 dataKey="value"
                 stroke="#22c55e"
-                strokeWidth={2}
+                strokeWidth={2.5}
+                fill="url(#valueGradient)"
                 dot={false}
-                activeDot={{ r: 4, fill: "#22c55e" }}
-              />
-              {hasInvestment && (
-                <Line
-                  type="monotone"
-                  dataKey="investment"
-                  stroke="#6366f1"
-                  strokeWidth={2}
-                  strokeDasharray="5 4"
-                  dot={false}
-                  activeDot={{ r: 4, fill: "#6366f1" }}
-                />
-              )}
-            </RechartsLine>
+                activeDot={{ r: 5, fill: "#22c55e", stroke: "hsl(var(--background))", strokeWidth: 2 }}
+              />                {hasInvestment && (
+                  <Line
+                    type="monotone"
+                    dataKey="investment"
+                    stroke="#6366f1"
+                    strokeWidth={2}
+                    strokeDasharray="5 4"
+                    dot={false}
+                    activeDot={{ r: 5, fill: "#6366f1", stroke: "hsl(var(--background))", strokeWidth: 2 }}
+                  />
+                )}
+            </AreaChart>
           </ResponsiveContainer>
         )}
       </CardContent>
