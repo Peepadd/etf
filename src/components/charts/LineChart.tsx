@@ -28,7 +28,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
     data.investment != null ? data.value - data.investment : null;
   return (
     <div className="rounded-lg border bg-card p-3 shadow-lg">
-      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="text-sm text-foreground/80">{label}</p>
       <div className="mt-1.5 space-y-1">
         <div className="flex items-center justify-between gap-4">
           <span className="flex items-center gap-1.5 text-xs">
@@ -117,7 +117,7 @@ export function LineChartCard({ data, loading, showInvestment }: LineChartCardPr
       <CardContent className="pt-2">
         {data.length === 0 ? (
           <div className="flex h-[300px] items-center justify-center">
-            <p className="text-sm text-muted-foreground">No data yet</p>
+            <p className="text-sm text-foreground/70">No data yet</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>

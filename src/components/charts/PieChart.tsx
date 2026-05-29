@@ -30,8 +30,8 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   return (
     <div className="rounded-lg border bg-card p-3 shadow-lg">
       <p className="font-medium text-foreground">{entry.symbol}</p>
-      <p className="text-sm text-muted-foreground">{formatCompactCurrency(entry.value)}</p>
-      <p className="text-sm text-muted-foreground">{entry.percentage.toFixed(1)}%</p>
+      <p className="text-sm text-foreground">{formatCompactCurrency(entry.value)}</p>
+      <p className="text-sm text-foreground">{entry.percentage.toFixed(1)}%</p>
     </div>
   );
 }
@@ -65,7 +65,7 @@ export function PieChartCard({ data, loading }: PieChartCardProps) {
       <CardContent>
         {data.length === 0 ? (
           <div className="flex h-[300px] items-center justify-center">
-            <p className="text-sm text-muted-foreground">No holdings yet</p>
+            <p className="text-sm text-foreground/70">No holdings yet</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>

@@ -43,7 +43,7 @@ export default function StockDetailPage() {
 
   const isUp = change != null && change > 0;
   const isDown = change != null && change < 0;
-  const colorClass = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-muted-foreground";
+  const colorClass = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-foreground";
   const bgColorClass = isUp
     ? "bg-green-500/10 border-green-500/20"
     : isDown
@@ -145,7 +145,7 @@ export default function StockDetailPage() {
         {sparkData.length >= 2 && !loading && (
           <div className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3">
             <div className="text-right">
-              <p className="text-xs text-muted-foreground">30d Range</p>
+              <p className="text-xs text-foreground/70">30d Range</p>
               <p className="text-xs font-medium text-foreground">
                 {sparkFirst?.close != null ? formatCompactCurrency(sparkFirst.close) : "—"}
                 {" — "}
@@ -181,7 +181,7 @@ export default function StockDetailPage() {
         {stats.map((stat) => (
           <Card key={stat.label}>
             <CardContent className="p-3 text-center">
-              <p className="text-xs text-muted-foreground mb-1">{stat.label}</p>
+              <p className="text-xs text-foreground/70 mb-1">{stat.label}</p>
               <p className="text-sm font-semibold text-foreground">
                 {loading ? <Skeleton className="mx-auto h-4 w-16" /> : stat.value}
               </p>

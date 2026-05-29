@@ -94,7 +94,7 @@ export const StockSymbolInput = forwardRef(function StockSymbolInput(
 
   const isUp = priceData?.change != null && priceData.change > 0;
   const isDown = priceData?.change != null && priceData.change < 0;
-  const priceColor = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-muted-foreground";
+  const priceColor = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-foreground";
   const PriceIcon = isUp ? TrendingUp : isDown ? TrendingDown : Minus;
 
   return (

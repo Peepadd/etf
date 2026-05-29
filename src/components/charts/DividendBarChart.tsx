@@ -25,7 +25,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   const data = payload[0].payload;
   return (
     <div className="rounded-lg border bg-card p-3 shadow-lg">
-      <p className="text-sm text-muted-foreground">{data.label}</p>
+      <p className="text-sm text-foreground/80">{data.label}</p>
       <p className="text-lg font-bold text-green-500">
         {formatCurrency(data.amount)}
       </p>
@@ -62,7 +62,7 @@ export function DividendBarChart({ data, loading }: DividendBarChartProps) {
       <CardContent className="pt-2">
         {data.length === 0 ? (
           <div className="flex h-[300px] items-center justify-center">
-            <p className="text-sm text-muted-foreground">No dividends recorded yet</p>
+            <p className="text-sm text-foreground/70">No dividends recorded yet</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>

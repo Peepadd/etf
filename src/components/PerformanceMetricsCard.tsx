@@ -104,7 +104,7 @@ export function PerformanceMetricsCard({
               {metrics.winRate != null ? `${metrics.winRate.toFixed(1)}%` : "—"}
             </p>
             {metrics.totalClosedTrades > 0 && (
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <p className="text-[11px] text-foreground mt-0.5">
                 {metrics.totalWins}W / {metrics.totalLosses}L ({metrics.totalClosedTrades} closed)
               </p>
             )}
@@ -120,7 +120,7 @@ export function PerformanceMetricsCard({
               {formatPct(metrics.totalReturn)}
             </p>
             {metrics.daysSinceStart > 0 && (
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <p className="text-[11px] text-foreground mt-0.5">
                 Over {metrics.daysSinceStart} days
               </p>
             )}
@@ -135,7 +135,7 @@ export function PerformanceMetricsCard({
             <p className={`mt-1 text-xl font-bold tabular-nums ${cagrColor}`}>
               {formatPct(metrics.cagr)}
             </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
+            <p className="text-[11px] text-foreground/70 mt-0.5">
               Compound annual growth
             </p>
           </div>
@@ -149,14 +149,14 @@ export function PerformanceMetricsCard({
             <p className={`mt-1 text-xl font-bold tabular-nums ${twrrColor}`}>
               {formatPct(metrics.twrr)}
             </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
+            <p className="text-[11px] text-foreground/70 mt-0.5">
               Time-weighted return
             </p>
           </div>
         </div>
 
         {/* Subtitle */}
-        <p className="text-[10px] text-muted-foreground mt-4 leading-relaxed">
+        <p className="text-[10px] text-foreground/70 mt-4 leading-relaxed">
           Win rate based on closed (SELL) trades. CAGR calculated from total invested vs current market value over {(metrics.daysSinceStart / 365).toFixed(1)} years. TWRR chains returns between cash-flow events.
         </p>
       </CardContent>
