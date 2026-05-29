@@ -85,8 +85,7 @@ export function PieChartCard({ data, loading }: PieChartCardProps) {
                 cy="50%"
                 outerRadius={100}
                 innerRadius={60}
-                paddingAngle={1}
-                strokeWidth={3}
+                strokeWidth={2}
                 stroke="hsl(var(--background))"
               >
                 {data.map((_, index) => (
