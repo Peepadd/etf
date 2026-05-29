@@ -126,19 +126,26 @@
   }
 }
 
+*,
+*::before,
+*::after {
+  color: inherit;
+}
+
+body {
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
 * {
   border-color: var(--border);
 }
 
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-}
-
 /* ── Table dark mode visibility fix ────────────────────────────────────
    Force background on all table elements to prevent browser default
-   white background from bleeding through in dark mode. Then force
-   foreground color so text is always readable on the dark background. */
+   white background from bleeding through in dark mode. Use inherit
+   so child elements follow the table cell's color instead of falling
+   back to browser default black. */
 
 table,
 thead,
@@ -149,54 +156,37 @@ th,
 td {
   background-color: transparent !important;
   color: var(--foreground) !important;
+  border-color: var(--border);
 }
 
-/* TableHeader rows get a subtle dark background to distinguish from body */
-thead tr {
-  background-color: var(--muted) !important;
-}
-
-/* Table header cells specifically */
-th {
+thead th {
   background-color: var(--muted) !important;
   color: var(--muted-foreground) !important;
 }
 
-/* Hover rows should stay dark */
 tbody tr:hover {
   background-color: oklch(0.269 0.038 265.755 / 0.5) !important;
 }
 
-/* All child elements inside td/th get foreground color */
 td *,
 th * {
-  color: var(--foreground) !important;
+  color: inherit !important;
 }
 
-/* Preserve green text for positive values */
-td .text-green-500,
-td .text-green-500 * {
-  color: #22c55e !important;
-}
+/* Restore specific semantic colors (global, no !important — hover
+   effects like hover:text-red-500 still work outside tables) */
+.text-green-500, .text-green-500 * { color: #22c55e; }
+.text-red-500, .text-red-500 * { color: #ef4444; }
+.text-muted-foreground, .text-muted-foreground * { color: var(--muted-foreground); }
+.text-amber-500, .text-amber-500 * { color: #f59e0b; }
 
-/* Preserve red text for negative values */
-td .text-red-500,
-td .text-red-500 * {
-  color: #ef4444 !important;
-}
-
-/* Preserve muted-foreground for secondary text inside tables */
-td .text-muted-foreground,
-th .text-muted-foreground,
-table .text-muted-foreground,
-td .text-muted-foreground *,
-th .text-muted-foreground *,
-table .text-muted-foreground * {
-  color: var(--muted-foreground) !important;
-}
-
-/* Preserve amber/yellow for warnings */
-td .text-amber-500,
-td .text-amber-500 * {
-  color: #f59e0b !important;
-}
+/* Inside tables, repeat with !important to override
+   `td *, th * { color: inherit !important; }` */
+td .text-green-500, td .text-green-500 *,
+th .text-green-500, th .text-green-500 * { color: #22c55e !important; }
+td .text-red-500, td .text-red-500 *,
+th .text-red-500, th .text-red-500 * { color: #ef4444 !important; }
+td .text-muted-foreground, td .text-muted-foreground *,
+th .text-muted-foreground, th .text-muted-foreground * { color: var(--muted-foreground) !important; }
+td .text-amber-500, td .text-amber-500 *,
+th .text-amber-500, th .text-amber-500 * { color: #f59e0b !important; }
