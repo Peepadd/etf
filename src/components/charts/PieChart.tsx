@@ -71,10 +71,10 @@ export function PieChartCard({ data, loading }: PieChartCardProps) {
           <ResponsiveContainer width="100%" height={300}>
             <RechartsPie>
               {/* Center label showing total value */}
-              <text x="50%" y="48%" textAnchor="middle" dominantBaseline="middle" fill="hsl(var(--foreground))" fontSize="18" fontWeight="bold" fontFamily="var(--font-sans)">
+              <text x="50%" y="48%" textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontSize="18" fontWeight="bold" fontFamily="var(--font-sans)">
                 {formatCompactCurrency(data.reduce((s, e) => s + e.value, 0))}
               </text>
-              <text x="50%" y="58%" textAnchor="middle" dominantBaseline="middle" fill="hsl(var(--muted-foreground))" fontSize="11">
+              <text x="50%" y="58%" textAnchor="middle" dominantBaseline="middle" fill="#a1a1aa" fontSize="11">
                 Total Value
               </text>
               <Pie
