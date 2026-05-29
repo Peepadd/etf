@@ -126,15 +126,11 @@
   }
 }
 
-*,
-*::before,
-*::after {
-  color: inherit;
-}
+/* Note: universal color: inherit breaks things — removed */
 
-body {
-  color: var(--foreground);
-  background-color: var(--background);
+html, body {
+  color: var(--foreground) !important;
+  background-color: var(--background) !important;
 }
 
 * {
