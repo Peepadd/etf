@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Trash2, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Trash2, TrendingUp, TrendingDown, Minus, DollarSign, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency, formatDate, formatNumber } from "@/lib/utils";
 import { useTrades } from "@/hooks/useTrades";
@@ -30,6 +30,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { KpiCard } from "@/components/KpiCard";
 
 export default function TradesPage() {
   const { trades, loading, sortConfig, setSortConfig, refetch, deleteTrade } = useTrades();
@@ -39,11 +40,39 @@ export default function TradesPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Trade | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [mktSortDir, setMktSortDir] = useState<"asc" | "desc" | null>(null);
   const pageSize = 20;
 
   // Get unique symbols for market price fetching
   const symbols = useMemo(() => [...new Set(trades.map((t) => t.symbol))], [trades]);
   const { prices } = useStockPrices(symbols);
+
+  // Compute total unrealized P&L from BUY trades
+  const unrealizedPnL = useMemo(() => {
+    let totalInvestment = 0;
+    let totalMarketValue = 0;
+
+    for (const trade of trades) {
+      if (trade.type !== "BUY") continue;
+      const sp = prices.get(trade.symbol);
+      const mktPrice = sp?.price;
+      if (mktPrice == null || mktPrice <= 0) continue;
+
+      totalInvestment += trade.price * trade.quantity;
+      totalMarketValue += mktPrice * trade.quantity;
+    }
+
+    const pnl = totalMarketValue - totalInvestment;
+    const pnlPercent = totalInvestment > 0 ? (pnl / totalInvestment) * 100 : 0;
+
+    return {
+      pnl,
+      pnlPercent,
+      totalInvestment,
+      totalMarketValue,
+      hasData: totalInvestment > 0,
+    };
+  }, [trades, prices]);
 
   const filteredTrades = useMemo(() => {
     return trades.filter((trade) => {
@@ -66,6 +95,29 @@ export default function TradesPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [filterSymbol, filterType]);
+
+  // Sort trades for Mkt column (% change)
+  const sortedPaginatedTrades = useMemo(() => {
+    if (!mktSortDir) return paginatedTrades;
+
+    return [...paginatedTrades].sort((a, b) => {
+      const spA = prices.get(a.symbol);
+      const spB = prices.get(b.symbol);
+      const mktA = spA?.price ?? 0;
+      const mktB = spB?.price ?? 0;
+
+      // Trades without valid market prices go to the end
+      if (mktA <= 0 && mktB <= 0) return 0;
+      if (mktA <= 0) return 1;
+      if (mktB <= 0) return -1;
+
+      const diffA = a.type === "BUY" ? mktA - a.price : a.price - mktA;
+      const diffB = b.type === "BUY" ? mktB - b.price : b.price - mktB;
+      const pctA = a.price > 0 ? (diffA / a.price) * 100 : 0;
+      const pctB = b.price > 0 ? (diffB / b.price) * 100 : 0;
+      return mktSortDir === "asc" ? pctA - pctB : pctB - pctA;
+    });
+  }, [paginatedTrades, prices, mktSortDir]);
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
@@ -116,7 +168,7 @@ export default function TradesPage() {
     },
     {
       key: "price",
-      label: "Price",
+      label: "Buy Price",
       sortable: true,
       render: (t) => formatCurrency(t.price),
       className: "text-right",
@@ -124,6 +176,7 @@ export default function TradesPage() {
     {
       key: "mkt_price",
       label: "Mkt",
+      sortable: true,
       render: (t) => {
         const sp = prices.get(t.symbol);
         const mktPrice = sp?.price;
@@ -134,14 +187,17 @@ export default function TradesPage() {
         const isProfit = diff > 0;
         const isLoss = diff < 0;
         const diffPct = t.price > 0 ? (diff / t.price) * 100 : 0;
+        const totalPnL = diff * t.quantity;
         const colorClass = isProfit ? "text-green-500" : isLoss ? "text-red-500" : "text-muted-foreground";
         const Icon = isProfit ? TrendingUp : isLoss ? TrendingDown : Minus;
+        const pnlPrefix = totalPnL >= 0 ? "+" : "";
         return (
           <div className="flex flex-col items-end gap-0.5">
             <span className="text-xs font-medium tabular-nums">{formatCurrency(mktPrice)}</span>
-            <span className={`flex items-center gap-0.5 text-[11px] ${colorClass}`}>
+            <span className={`flex items-center gap-1 text-[11px] ${colorClass}`}>
               <Icon className="h-3 w-3" />
-              {diffPct >= 0 ? "+" : ""}{diffPct.toFixed(1)}%
+              <span className="font-semibold">{pnlPrefix}{formatCurrency(totalPnL)}</span>
+              <span className="opacity-70">({pnlPrefix}{diffPct.toFixed(1)}%)</span>
             </span>
           </div>
         );
@@ -194,10 +250,22 @@ export default function TradesPage() {
   ];
 
   const handleSort = (key: string) => {
-    const direction =
-      sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";
-    setSortConfig({ key, direction } as SortConfig);
+    if (key === "mkt_price") {
+      // Toggle Mkt sort: none → desc → asc → none
+      const newDir = mktSortDir === null ? "desc" : mktSortDir === "desc" ? "asc" : null;
+      setMktSortDir(newDir);
+    } else {
+      // Reset Mkt sort and use server-side sort
+      setMktSortDir(null);
+      const direction =
+        sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";
+      setSortConfig({ key, direction } as SortConfig);
+    }
   };
+
+  // Active sort key/direction for the DataTable
+  const activeSortKey = mktSortDir ? "mkt_price" : sortConfig.key;
+  const activeSortDir = mktSortDir || sortConfig.direction;
 
   return (
     <div className="space-y-6">
@@ -208,6 +276,29 @@ export default function TradesPage() {
         </div>
         <TradeForm onSuccess={refetch} />
       </div>
+
+      {/* Unrealized P&L Summary */}
+      {unrealizedPnL.hasData && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <KpiCard
+            title="Unrealized P&L"
+            value={`${unrealizedPnL.pnl >= 0 ? "+" : ""}${formatCurrency(unrealizedPnL.pnl)}`}
+            description={`${unrealizedPnL.pnlPercent >= 0 ? "+" : ""}${unrealizedPnL.pnlPercent.toFixed(2)}%`}
+            icon={unrealizedPnL.pnl >= 0 ? TrendingUp : TrendingDown}
+            valueClassName={unrealizedPnL.pnl >= 0 ? "text-green-500" : "text-red-500"}
+          />
+          <KpiCard
+            title="Cost Basis"
+            value={formatCurrency(unrealizedPnL.totalInvestment)}
+            icon={DollarSign}
+          />
+          <KpiCard
+            title="Market Value"
+            value={formatCurrency(unrealizedPnL.totalMarketValue)}
+            icon={Wallet}
+          />
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
@@ -233,14 +324,14 @@ export default function TradesPage() {
 
       <DataTable
         columns={columns}
-        data={paginatedTrades}
+        data={sortedPaginatedTrades}
         loading={loading}
         pageSize={pageSize}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
         totalCount={filteredTrades.length}
-        sortKey={sortConfig.key}
-        sortDirection={sortConfig.direction}
+        sortKey={activeSortKey}
+        sortDirection={activeSortDir}
         onSort={handleSort}
         emptyMessage="No trades recorded yet."
         emptyAction={<TradeForm onSuccess={refetch} />}
