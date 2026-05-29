@@ -135,9 +135,42 @@ body {
   color: var(--foreground);
 }
 
-/* Force table data cells to use theme foreground color (Tailwind v4 table inheritance fix).
-   !important on td does NOT propagate to child elements, so explicit text-* classes
-   (e.g. text-green-500) on spans/divs inside cells still take precedence. */
-td {
+/* ── Table dark mode visibility fix ────────────────────────────────────
+   Force everything inside tables to use theme foreground color, overriding
+   Tailwind CSS v4 / browser default user-agent styles (black text).
+   Semantic colors (green/red for gains/losses, muted for secondary) are
+   explicitly restored below. */
+table,
+thead,
+tbody,
+tr,
+th,
+td,
+td *,
+th * {
   color: var(--foreground) !important;
+}
+
+/* Preserve green text for positive values */
+td .text-green-500,
+td .text-green-500 * {
+  color: #22c55e !important;
+}
+
+/* Preserve red text for negative values */
+td .text-red-500,
+td .text-red-500 * {
+  color: #ef4444 !important;
+}
+
+/* Preserve muted-foreground for secondary text inside tables only.
+   Scoped to table context so hover effects (e.g. Trash2 hover:text-red-500)
+   on elements outside tables still work. */
+td .text-muted-foreground,
+th .text-muted-foreground,
+table .text-muted-foreground,
+td .text-muted-foreground *,
+th .text-muted-foreground *,
+table .text-muted-foreground * {
+  color: var(--muted-foreground) !important;
 }
