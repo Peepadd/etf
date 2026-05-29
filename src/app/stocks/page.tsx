@@ -518,7 +518,7 @@ export default function StocksPage() {
           {filteredPositions.map((pos) => {
             const isUp = pos.change != null && pos.change > 0;
             const isDown = pos.change != null && pos.change < 0;
-            const priceColor = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-muted-foreground";
+            const priceColor = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-foreground";
             const PriceIcon = isUp ? TrendingUp : isDown ? TrendingDown : Minus;
 
             const plUp = pos.unrealizedPL > 0;
@@ -553,7 +553,7 @@ export default function StocksPage() {
                           )}
                           <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5 text-xs text-muted-foreground">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5 text-xs">
                           {pos.totalQuantity > 0 && (
                             <>
                               <span>
@@ -625,7 +625,7 @@ export default function StocksPage() {
                               <div
                                 className={cn(
                                   "text-xs font-medium mt-0.5",
-                                  plUp ? "text-green-500" : plDown ? "text-red-500" : "text-muted-foreground",
+                                  plUp ? "text-green-500" : plDown ? "text-red-500" : "text-foreground",
                                 )}
                               >
                                 P&L: {pos.unrealizedPL >= 0 ? "+" : ""}
@@ -677,7 +677,7 @@ export default function StocksPage() {
                 const fd = fundamentals.get(pos.symbol);
                 const isUp = pos.change != null && pos.change > 0;
                 const isDown = pos.change != null && pos.change < 0;
-                const priceColor = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-muted-foreground";
+                const priceColor = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-foreground";
                 const PriceIcon = isUp ? TrendingUp : isDown ? TrendingDown : Minus;
                 const plUp = pos.unrealizedPL > 0;
                 const plDown = pos.unrealizedPL < 0;
@@ -773,7 +773,7 @@ export default function StocksPage() {
 
             const isUp = pos.change != null && pos.change > 0;
             const isDown = pos.change != null && pos.change < 0;
-            const priceColor = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-muted-foreground";
+            const priceColor = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-foreground";
             const PriceIcon = isUp ? TrendingUp : isDown ? TrendingDown : Minus;
             const plUp = pos.unrealizedPL > 0;
             const plDown = pos.unrealizedPL < 0;
@@ -858,7 +858,7 @@ export default function StocksPage() {
                       <p
                         className={cn(
                           "mt-0.5 text-xl font-bold",
-                          plUp ? "text-green-500" : plDown ? "text-red-500" : "text-muted-foreground",
+                          plUp ? "text-green-500" : plDown ? "text-red-500" : "text-foreground",
                         )}
                       >
                         {pos.unrealizedPL >= 0 ? "+" : ""}
@@ -943,7 +943,7 @@ export default function StocksPage() {
                             </div>
                             <div className="flex items-center gap-3 text-xs">
                               <span className="tabular-nums">{formatNumber(trade.quantity)} shares</span>
-                              <span className="tabular-nums text-muted-foreground">@ {formatCurrency(trade.price)}</span>
+                              <span className="tabular-nums text-foreground/70">@ {formatCurrency(trade.price)}</span>
                               <span className="tabular-nums font-medium">{formatCurrency(trade.total_value)}</span>
                             </div>
                           </div>

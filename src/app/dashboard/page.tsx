@@ -291,12 +291,12 @@ export default function DashboardPage() {
                     >
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm">{item.symbol}</span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs">
                           {formatCurrency(item.totalDividends)} received
                         </span>
                       </div>
                       <div className="flex items-center gap-3 text-right">
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs">
                           Cost: {formatCompactCurrency(item.costBasis)}
                         </span>
                         <Badge variant="outline" className="text-green-500 font-medium">

@@ -188,7 +188,7 @@ export default function TradesPage() {
         const isLoss = diff < 0;
         const diffPct = t.price > 0 ? (diff / t.price) * 100 : 0;
         const totalPnL = diff * t.quantity;
-        const colorClass = isProfit ? "text-green-500" : isLoss ? "text-red-500" : "text-muted-foreground";
+        const colorClass = isProfit ? "text-green-500" : isLoss ? "text-red-500" : "text-foreground";
         const Icon = isProfit ? TrendingUp : isLoss ? TrendingDown : Minus;
         const pnlPrefix = totalPnL >= 0 ? "+" : "";
         return (
@@ -216,7 +216,7 @@ export default function TradesPage() {
       label: "Fee",
       sortable: true,
       render: (t) => formatCurrency(t.broker_fee),
-      className: "text-right text-muted-foreground",
+      className: "text-right",
     },
     {
       key: "notes",
@@ -347,7 +347,7 @@ export default function TradesPage() {
               {deleteTarget && (
                 <div className="mt-2 rounded-md bg-muted p-3 text-sm">
                   <p>{deleteTarget.symbol} — {deleteTarget.type}</p>
-                  <p className="text-muted-foreground">
+                  <p>
                     {formatDate(deleteTarget.date)} · {formatNumber(deleteTarget.quantity)} shares @ {formatCurrency(deleteTarget.price)}
                   </p>
                 </div>

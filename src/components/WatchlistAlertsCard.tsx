@@ -155,7 +155,7 @@ export function WatchlistAlertsCard({
                         {stockPrice?.change != null && (
                           <span className={cn(
                             "text-xs tabular-nums",
-                            isUp ? "text-green-500" : isDown ? "text-red-500" : "text-muted-foreground"
+                            isUp ? "text-green-500" : isDown ? "text-red-500" : "text-foreground"
                           )}>
                             {stockPrice.change >= 0 ? "+" : ""}{stockPrice.change.toFixed(2)}
                           </span>

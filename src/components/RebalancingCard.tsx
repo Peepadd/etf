@@ -213,7 +213,7 @@ export function RebalancingCard({
                     <span
                       className={`text-sm tabular-nums font-medium ${
                         absDev <= 1
-                          ? "text-muted-foreground"
+                          ? "text-foreground"
                           : deviation > 0
                             ? "text-red-500"
                             : "text-green-500"

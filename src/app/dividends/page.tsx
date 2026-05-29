@@ -233,7 +233,7 @@ export default function DividendsPage() {
               {deleteTarget && (
                 <div className="mt-2 rounded-md bg-muted p-3 text-sm">
                   <p>{deleteTarget.symbol}</p>
-                  <p className="text-muted-foreground">
+                  <p>
                     {formatDate(deleteTarget.date)} · {formatCurrency(deleteTarget.amount)}
                   </p>
                 </div>

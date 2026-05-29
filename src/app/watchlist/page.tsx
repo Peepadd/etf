@@ -45,7 +45,7 @@ function getPriorityVariant(priority: string) {
 function PriceDisplay({ price, change, changePercent }: { price: number; change: number | null; changePercent: number | null }) {
   const isUp = change != null && change > 0;
   const isDown = change != null && change < 0;
-  const colorClass = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-muted-foreground";
+  const colorClass = isUp ? "text-green-500" : isDown ? "text-red-500" : "text-foreground";
   const Icon = isUp ? TrendingUp : isDown ? TrendingDown : Minus;
   const changeStr = change != null ? `${isUp ? "+" : ""}${change.toFixed(2)}` : "—";
   const changePercentStr = changePercent != null ? `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : "—";
