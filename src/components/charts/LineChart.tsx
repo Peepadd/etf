@@ -138,7 +138,7 @@ export function LineChartCard({ data, loading, showInvestment }: LineChartCardPr
                 stroke="hsl(var(--muted-foreground) / 0.2)"
               />
               <YAxis
-                domain={[(dataMin: number) => Math.max(0, dataMin * 0.95), (dataMax: number) => dataMax * 1.05]}
+                domain={[(dataMin: number) => dataMin * 0.98, (dataMax: number) => dataMax * 1.02]}
                 tickFormatter={(val) => formatCompactCurrency(val)}
                 tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
                 stroke="hsl(var(--muted-foreground) / 0.2)"
