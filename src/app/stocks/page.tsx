@@ -5,9 +5,10 @@ import Link from "next/link";
 import { TrendingUp, TrendingDown, Minus, BarChart3, ExternalLink, Search, Building2, DollarSign, ArrowUpDown, ArrowUp, ArrowDown, LayoutGrid, List } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { formatCurrency, formatCompactCurrency, formatNumber, formatDate, cn } from "@/lib/utils";
+import { computePortfolioHistory } from "@/lib/portfolio";
 import { useStockPrices } from "@/hooks/useStockPrices";
 import { useStockFundamentals } from "@/hooks/useStockFundamentals";
-import type { Trade, StockPrice, DailyPortfolioValue } from "@/lib/types";
+import type { Trade, StockPrice } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -104,86 +105,6 @@ function computePositions(trades: Trade[], prices: Map<string, StockPrice>): Sto
   positions.sort((a, b) => b.marketValue - a.marketValue);
 
   return positions;
-}
-
-function computePortfolioHistory(trades: Trade[]): DailyPortfolioValue[] {
-  if (trades.length === 0) return [];
-
-  // Sort trades by date ascending
-  const sorted = [...trades].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-  );
-
-  const firstDate = new Date(sorted[0].date);
-  const today = new Date();
-
-  // Track holdings (qty, cost) and cumulative investment at each trade date
-  const holdingsMap = new Map<string, { qty: number; cost: number }>();
-
-  // Build maps of date -> portfolio value and date -> cumulative investment
-  const dateValues = new Map<string, { value: number; investment: number }>();
-
-  let totalInvested = 0;
-
-  for (const trade of sorted) {
-    const sym = trade.symbol;
-    const existing = holdingsMap.get(sym) || { qty: 0, cost: 0 };
-
-    if (trade.type === "BUY") {
-      existing.qty += Number(trade.quantity);
-      existing.cost += Number(trade.total_value);
-      totalInvested += Number(trade.total_value);
-    } else {
-      const avgCost = existing.qty > 0 ? existing.cost / existing.qty : 0;
-      existing.qty -= Number(trade.quantity);
-      existing.cost -= avgCost * Number(trade.quantity);
-      if (existing.qty <= 0) {
-        existing.qty = 0;
-        existing.cost = 0;
-      }
-    }
-    holdingsMap.set(sym, existing);
-
-    // Compute total cost basis across all holdings
-    let totalValue = 0;
-    for (const [_, h] of holdingsMap) {
-      totalValue += h.cost;
-    }
-
-    const dateStr = trade.date.split("T")[0];
-    dateValues.set(dateStr, { value: totalValue, investment: totalInvested });
-  }
-
-  // Generate daily values from first trade date to today
-  const values: DailyPortfolioValue[] = [];
-  const current = new Date(firstDate);
-
-  let currentValue = 0;
-  let currentInvestment = 0;
-
-  while (current <= today) {
-    const dateStr = current.toISOString().split("T")[0];
-
-    // Update from known trade dates
-    if (dateValues.has(dateStr)) {
-      const dv = dateValues.get(dateStr)!;
-      currentValue = dv.value;
-      currentInvestment = dv.investment;
-    } else if (values.length === 0) {
-      // Before first trade date, portfolio value is 0
-      currentValue = 0;
-      currentInvestment = 0;
-    }
-
-    values.push({
-      date: dateStr,
-      value: currentValue,
-      investment: currentInvestment,
-    });
-    current.setDate(current.getDate() + 1);
-  }
-
-  return values;
 }
 
 type SortKey = "symbol" | "marketValue" | "unrealizedPL" | "changePercent" | "trailingPE" | "marketCap" | "totalQuantity";
