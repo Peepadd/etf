@@ -76,15 +76,15 @@ export function DividendBarChart({ data, loading }: DividendBarChartProps) {
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.15)" />
               <XAxis
                 dataKey="label"
-                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                stroke="hsl(var(--muted-foreground) / 0.2)"
+                tick={{ fontSize: 11, fill: "#71717a" }}
+                stroke="#27272a"
                 interval="preserveStartEnd"
                 minTickGap={30}
               />
               <YAxis
                 tickFormatter={(val: number) => formatCompactCurrency(val)}
-                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                stroke="hsl(var(--muted-foreground) / 0.2)"
+                tick={{ fontSize: 11, fill: "#71717a" }}
+                stroke="#27272a"
                 width={65}
               />
               <Tooltip content={<CustomTooltip />} />

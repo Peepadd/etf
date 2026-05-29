@@ -135,14 +135,14 @@ export function LineChartCard({ data, loading, showInvestment }: LineChartCardPr
               <XAxis
                 dataKey="date"
                 tickFormatter={(val) => formatDateShort(val)}
-                tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-                stroke="hsl(var(--muted-foreground) / 0.2)"
+                tick={{ fontSize: 12, fill: "#71717a" }}
+                stroke="#27272a"
               />
               <YAxis
                 domain={[(dataMin: number) => dataMin * 0.99, (dataMax: number) => dataMax * 1.01]}
                 tickFormatter={(val) => formatCompactCurrency(val)}
-                tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-                stroke="hsl(var(--muted-foreground) / 0.2)"
+                tick={{ fontSize: 12, fill: "#71717a" }}
+                stroke="#27272a"
               />
               <Tooltip content={<CustomTooltip />} />
               <Area

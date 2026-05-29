@@ -168,7 +168,7 @@ export function StockChart({
                   const parts = val.split("-");
                   return `${parts[1]}/${parts[2]}`;
                 }}
-                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                tick={{ fontSize: 11, fill: "#71717a" }}
                 stroke="hsl(var(--border))"
                 interval="preserveStartEnd"
                 minTickGap={40}
@@ -176,7 +176,7 @@ export function StockChart({
               <YAxis
                 domain={["dataMin - 5", "dataMax + 5"]}
                 tickFormatter={(val: number) => formatCompactCurrency(val)}
-                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                tick={{ fontSize: 11, fill: "#71717a" }}
                 stroke="hsl(var(--border))"
                 width={65}
               />
