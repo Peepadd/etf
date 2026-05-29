@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  ReferenceLine,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -138,23 +139,30 @@ export function LineChartCard({ data, loading, showInvestment }: LineChartCardPr
                 stroke="hsl(var(--muted-foreground) / 0.2)"
               />
               <YAxis
-                domain={[(dataMin: number) => dataMin * 0.98, (dataMax: number) => dataMax * 1.02]}
+                domain={[(dataMin: number) => dataMin * 0.99, (dataMax: number) => dataMax * 1.01]}
                 tickFormatter={(val) => formatCompactCurrency(val)}
                 tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
                 stroke="hsl(var(--muted-foreground) / 0.2)"
               />
               <Tooltip content={<CustomTooltip />} />
               <Area
-                type="monotone"
+                type="linear"
                 dataKey="value"
                 stroke="#22c55e"
                 strokeWidth={2.5}
                 fill="url(#valueGradient)"
                 dot={false}
                 activeDot={{ r: 5, fill: "#22c55e", stroke: "hsl(var(--background))", strokeWidth: 2 }}
-              />                {hasInvestment && (
+              />
+              {hasInvestment && (<>
+                  <ReferenceLine
+                    y={chartData[0].investment}
+                    stroke="#6366f1"
+                    strokeDasharray="4 4"
+                    opacity={0.4}
+                  />
                   <Line
-                    type="monotone"
+                    type="linear"
                     dataKey="investment"
                     stroke="#6366f1"
                     strokeWidth={2}
@@ -162,7 +170,7 @@ export function LineChartCard({ data, loading, showInvestment }: LineChartCardPr
                     dot={false}
                     activeDot={{ r: 5, fill: "#6366f1", stroke: "hsl(var(--background))", strokeWidth: 2 }}
                   />
-                )}
+                </>)}
             </AreaChart>
           </ResponsiveContainer>
         )}
