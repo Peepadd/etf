@@ -135,8 +135,9 @@ body {
   color: var(--foreground);
 }
 
-/* Safety net: ensure table/cell text defaults to foreground so content is always visible.
-   Explicit text-* classes (e.g. text-green-500) still take precedence. */
-th, td {
-  color: var(--foreground);
+/* Force table data cells to use theme foreground color (Tailwind v4 table inheritance fix).
+   !important on td does NOT propagate to child elements, so explicit text-* classes
+   (e.g. text-green-500) on spans/divs inside cells still take precedence. */
+td {
+  color: var(--foreground) !important;
 }
