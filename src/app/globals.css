@@ -134,3 +134,9 @@ body {
   background-color: var(--background);
   color: var(--foreground);
 }
+
+/* Safety net: ensure table/cell text defaults to foreground so content is always visible.
+   Explicit text-* classes (e.g. text-green-500) still take precedence. */
+th, td {
+  color: var(--foreground);
+}
