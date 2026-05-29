@@ -79,6 +79,7 @@ interface LineChartCardProps {
 
 export function LineChartCard({ data, loading, showInvestment }: LineChartCardProps) {
   const hasInvestment = showInvestment && data.length > 0 && data[0].investment != null;
+  const chartData = data.filter(d => d.value > 0);
 
   if (loading) {
     return (
@@ -115,13 +116,13 @@ export function LineChartCard({ data, loading, showInvestment }: LineChartCardPr
         </div>
       </CardHeader>
       <CardContent className="pt-2">
-        {data.length === 0 ? (
+        {chartData.length === 0 ? (
           <div className="flex h-[300px] items-center justify-center">
             <p className="text-sm text-foreground/70">No data yet</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={data}>
+            <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="valueGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#22c55e" stopOpacity={0.35} />
@@ -137,6 +138,7 @@ export function LineChartCard({ data, loading, showInvestment }: LineChartCardPr
                 stroke="hsl(var(--muted-foreground) / 0.2)"
               />
               <YAxis
+                domain={[(dataMin: number) => Math.max(0, dataMin * 0.95), (dataMax: number) => dataMax * 1.05]}
                 tickFormatter={(val) => formatCompactCurrency(val)}
                 tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
                 stroke="hsl(var(--muted-foreground) / 0.2)"

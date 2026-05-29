@@ -92,8 +92,8 @@ export function PieChartCard({ data, loading }: PieChartCardProps) {
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
-                    stroke="rgba(0,0,0,0.4)"
-                    strokeWidth={1.5}
+              stroke="hsl(var(--background))"
+              strokeWidth={2}
                     className="outline-none hover:opacity-90 transition-opacity"
                   />
                 ))}
