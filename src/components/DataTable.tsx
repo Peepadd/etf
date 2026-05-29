@@ -94,7 +94,7 @@ export function DataTable<T extends { id: string }>({
           </TableHeader>
           <TableBody>
             {Array.from({ length: 5 }).map((_, i) => (
-              <TableRow key={i}>
+              <TableRow key={i} className="text-foreground">
                 {columns.map((col) => (
                   <TableCell key={col.key} className={col.className}>
                     <Skeleton className="h-4 w-full max-w-[120px]" />
@@ -141,7 +141,7 @@ export function DataTable<T extends { id: string }>({
         </TableHeader>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item.id}>
+            <TableRow key={item.id} className="text-foreground">
               {columns.map((col) => (
                 <TableCell key={col.key} className={col.className}>
                   {col.render(item)}
