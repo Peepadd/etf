@@ -136,16 +136,38 @@ body {
 }
 
 /* ── Table dark mode visibility fix ────────────────────────────────────
-   Force everything inside tables to use theme foreground color, overriding
-   Tailwind CSS v4 / browser default user-agent styles (black text).
-   Semantic colors (green/red for gains/losses, muted for secondary) are
-   explicitly restored below. */
+   Force background on all table elements to prevent browser default
+   white background from bleeding through in dark mode. Then force
+   foreground color so text is always readable on the dark background. */
+
 table,
 thead,
 tbody,
+tfoot,
 tr,
 th,
-td,
+td {
+  background-color: transparent !important;
+  color: var(--foreground) !important;
+}
+
+/* TableHeader rows get a subtle dark background to distinguish from body */
+thead tr {
+  background-color: var(--muted) !important;
+}
+
+/* Table header cells specifically */
+th {
+  background-color: var(--muted) !important;
+  color: var(--muted-foreground) !important;
+}
+
+/* Hover rows should stay dark */
+tbody tr:hover {
+  background-color: oklch(0.269 0.038 265.755 / 0.5) !important;
+}
+
+/* All child elements inside td/th get foreground color */
 td *,
 th * {
   color: var(--foreground) !important;
@@ -163,9 +185,7 @@ td .text-red-500 * {
   color: #ef4444 !important;
 }
 
-/* Preserve muted-foreground for secondary text inside tables only.
-   Scoped to table context so hover effects (e.g. Trash2 hover:text-red-500)
-   on elements outside tables still work. */
+/* Preserve muted-foreground for secondary text inside tables */
 td .text-muted-foreground,
 th .text-muted-foreground,
 table .text-muted-foreground,
@@ -173,4 +193,10 @@ td .text-muted-foreground *,
 th .text-muted-foreground *,
 table .text-muted-foreground * {
   color: var(--muted-foreground) !important;
+}
+
+/* Preserve amber/yellow for warnings */
+td .text-amber-500,
+td .text-amber-500 * {
+  color: #f59e0b !important;
 }
